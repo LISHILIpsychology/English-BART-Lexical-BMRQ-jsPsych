@@ -8,6 +8,7 @@
 - Rebuilt numeric five- and seven-point items as responsive rating scales. Long endpoint labels remain inside their assigned controls and switch to full-width rows on narrow screens.
 - Institution-specific ethics reference and researcher contact details still need to be inserted from the approved study documents before formal recruitment.
 - Logic tests, desktop/mobile browser flow, consent-decline behavior, and rating-label overflow checks passed.
+- Production GitHub Pages smoke test passed on the deployed consent/form update.
 
 ## Longitudinal/Tidy Data Update (2026-08-12)
 

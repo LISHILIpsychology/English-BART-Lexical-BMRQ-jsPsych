@@ -8,7 +8,7 @@ Add a readable written-consent decision at entry and redesign rating-scale quest
 - [x] Phase 2: Implement written consent with explicit agree/decline behavior
 - [x] Phase 3: Implement accessible responsive rating scales
 - [x] Phase 4: Run logic, browser, visual, and code-review checks
-- [ ] Phase 5: Commit, publish, and verify the production URL
+- [x] Phase 5: Commit, publish, and verify the production URL
 
 ## Key Questions
 1. Is consent an informed, affirmative decision rather than a bundled checkbox?
@@ -30,4 +30,4 @@ Add a readable written-consent decision at entry and redesign rating-scale quest
 - First push of the consent/form update timed out connecting to `github.com:443`; retrying without changing the verified commit.
 
 ## Status
-**Currently in Phase 5** - preparing the verified copy for GitHub Pages deployment.
+**Complete** - the written consent and responsive questionnaire layout are deployed and verified on GitHub Pages.
