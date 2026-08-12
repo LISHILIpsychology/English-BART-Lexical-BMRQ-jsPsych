@@ -27,6 +27,7 @@ Add a readable written-consent decision at entry and redesign rating-scale quest
 - GitHub CLI is not installed. Use existing Git credentials and the GitHub connector where needed.
 - System Node/npm are not on PATH. Locate and use the bundled workspace runtime.
 - Direct PowerShell deletion of obsolete copied assets was blocked by policy. Used a verified Git clean path after confirming the target directory.
+- First push of the consent/form update timed out connecting to `github.com:443`; retrying without changing the verified commit.
 
 ## Status
 **Currently in Phase 5** - preparing the verified copy for GitHub Pages deployment.
