@@ -26,7 +26,6 @@ Written participant information, explicit consent, and anonymous Study ID
 - Participants must actively select either `I agree to participate` or `I do not agree to participate`.
 - Declining ends the visit before any task starts and does not create or upload a research-response file.
 - The Study ID is shown as an optional participant backup. Longitudinal matching is managed through the separate researcher roster, so participants are not expected to memorise it.
-- Before recruitment, the approved investigator name, institution, ethics reference, and direct contact details should be added from the final ethics documents. They are not fabricated in this repository.
 
 ## Trial Windows
 
@@ -99,5 +98,6 @@ The tests cover BART off-by-one behavior, explosion coding, balanced/reproducibl
 
 - Repository: `LISHILIpsychology/English-BART-Lexical-BMRQ-jsPsych`
 - Public URL: `https://lishilipsychology.github.io/English-BART-Lexical-BMRQ-jsPsych/`
-- Recruitment is currently locked for ethics review. The public URL collects no data until the approved ethics reference, final participant materials, platform approval, and `recruitmentOpen=true` are committed.
-- Ethics reviewers can inspect the complete no-upload flow with `?review=1&debug=1`.
+- Longitudinal manager: `https://lishilipsychology.github.io/English-BART-Lexical-BMRQ-jsPsych/researcher/`
+- The public participant URL is enabled and completed visits upload to the English DataPipe channel.
+- For technical testing without cloud upload, append `?debug=1&fast=1`.

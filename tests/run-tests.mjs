@@ -55,7 +55,7 @@ assert.equal(BMRQ_ITEMS.length, 20);
 assert.equal(SURVEY_ITEMS.length, EXPERIMENT_CONFIG.surveyItemCount);
 assert.equal(EXPERIMENT_CONFIG.site, "MY_UM");
 assert.equal(EXPERIMENT_CONFIG.languageVersion, "en");
-assert.equal(EXPERIMENT_CONFIG.recruitmentOpen, false);
+assert.equal(EXPERIMENT_CONFIG.recruitmentOpen, true);
 assert.deepEqual(BMRQ_ITEMS.filter((item) => item.reverse_scored).map((item) => item.id), ["BMRQ02", "BMRQ05"]);
 
 const deterministicId = createStudyId(Uint8Array.from({ length: 12 }, (_, index) => index));

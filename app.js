@@ -34,7 +34,6 @@ const query = new URLSearchParams(window.location.search);
 const DEBUG_MODE = query.has("debug");
 const FAST_MODE = query.has("fast");
 const SMOKE_MODE = DEBUG_MODE && query.has("smoke");
-const REVIEW_MODE = DEBUG_MODE && query.get("review") === "1";
 const suppliedStudyId = normalizeStudyId(query.get("pid"));
 const invalidSuppliedId = Boolean(query.get("pid")) && !isValidStudyId(suppliedStudyId);
 const initialStudyId = isValidStudyId(suppliedStudyId) ? suppliedStudyId : createStudyId();
@@ -68,7 +67,6 @@ const appState = {
   consentGiven: false,
   consentDeclined: false,
   debugMode: DEBUG_MODE,
-  reviewMode: REVIEW_MODE,
   uploadComplete: false
 };
 
@@ -118,7 +116,6 @@ function baseMetadata() {
     country: EXPERIMENT_CONFIG.country,
     language_version: EXPERIMENT_CONFIG.languageVersion,
     study_version: EXPERIMENT_CONFIG.version,
-    ethics_reference: EXPERIMENT_CONFIG.ethicsReference,
     consent_version: EXPERIMENT_CONFIG.consentVersion,
     task_order: appState.taskOrder,
     started_at_iso: appState.startedAtIso
@@ -238,7 +235,6 @@ function makeParticipantFormPlugin() {
           <section class="panel participant-panel">
             <header class="consent-header">
               <span class="consent-eyebrow">Participant information and written informed consent</span>
-              ${REVIEW_MODE ? '<div class="ethics-review-banner">Ethics committee preview. Recruitment and data upload are disabled.</div>' : ""}
               <h1>Risk Taking, English Lexical Processing, and Music Reward Study</h1>
               <p>Please read the information below before deciding whether to take part.</p>
             </header>
@@ -265,11 +261,11 @@ function makeParticipantFormPlugin() {
               </section>
               <section>
                 <h2>Compensation</h2>
-                <p>The proposed compensation is RM10 per visit, subject to final ethics and budget approval. It is fixed and never depends on balloon earnings, speed, accuracy, or questionnaire answers. Electronic voucher/transfer is preferred; an optional collection point near the UM 24-hour study/library area may be offered. Final approved details will be supplied before recruitment.</p>
+                <p>You will receive RM10 after completing each visit. This amount is fixed and does not depend on balloon earnings, speed, accuracy, or questionnaire answers. The research team will arrange an electronic voucher or transfer; an in-person collection option near the UM 24-hour study/library area may also be arranged.</p>
               </section>
               <section>
                 <h2>Questions or concerns</h2>
-                <p>Researcher and supervisor details will be inserted before recruitment. Participant-rights concerns may be directed to UMREC at umrec@um.edu.my or +603-7967 7022 ext. 2369. This preview is not an invitation to participate.</p>
+                <p>For study questions, compensation, withdrawal, or a request to delete eligible data, contact the research team using the details in your invitation message and quote your Study ID.</p>
               </section>
             </div>
             <div class="study-id-box">
@@ -679,7 +675,7 @@ function makeBartTrialPlugin() {
 
 const EXPORT_SCHEMAS = {
   summary: [
-    "study_id", "wave", "session_id", "site", "country", "language_version", "study_version", "ethics_reference",
+    "study_id", "wave", "session_id", "site", "country", "language_version", "study_version",
     "consent_version", "task_order", "started_at_iso", "completed_at_iso",
     "bart_formal_balloon_count", "bart_total_pumps", "bart_explosions", "bart_adjusted_mean_pumps",
     "bart_banked_total", "lexical_trial_count", "lexical_responded_count", "lexical_accuracy_responded",
@@ -789,11 +785,9 @@ function makeUploadPlugin() {
         }
       };
 
-      if (appState.debugMode || appState.reviewMode) {
+      if (appState.debugMode) {
         exports.forEach((file) => setFileStatus(file.type, "Test mode: ready"));
-        status.textContent = appState.reviewMode
-          ? "Ethics review mode: cloud upload is disabled."
-          : "Test mode: cloud upload skipped.";
+        status.textContent = "Test mode: cloud upload skipped.";
         this.jsPsych.pluginAPI.setTimeout(() => this.jsPsych.finishTrial({ task: "upload", debug: true }), TIMING.uploadDelayMs);
         return;
       }
@@ -951,18 +945,15 @@ timeline.push(screenTrial(
   `<p>Your responses have been processed. Thank you for participating.</p>
    <div class="study-id-box finished-id"><div><span class="study-id-label">Study ID for follow-up</span><strong>${escapeHtml(appState.participant.studyId)}</strong></div></div>
    <div class="finished-actions"><button class="secondary-button" type="button" onclick="window.print()">Print ID</button></div>
-   <p>Keep this ID and use the personalized link sent by the researcher for the next visit. The approved recruitment notice will explain compensation and contact procedures.</p>`,
+   <p>Keep this ID and use the personalized link sent by the researcher for the next visit.</p>`,
   "Finish"
 ));
 
-if (!EXPERIMENT_CONFIG.recruitmentOpen && !REVIEW_MODE) {
+if (!EXPERIMENT_CONFIG.recruitmentOpen) {
   document.querySelector("#jspsych-target").innerHTML = `
-    <div class="screen ethics-lock-screen"><section class="panel compact ethics-lock-panel">
-      <span class="consent-eyebrow">Ethics review status</span>
-      <h1>Recruitment is not open</h1>
-      <p>This study website is being prepared for ethics review. It is not currently accepting participants or collecting research data.</p>
-      <p>Please return only after receiving an approved invitation from the research team.</p>
-      <div class="ethics-lock-meta"><strong>Ethics reference</strong><span>${escapeHtml(EXPERIMENT_CONFIG.ethicsReference)}</span></div>
+    <div class="screen"><section class="panel compact">
+      <h1>Study temporarily unavailable</h1>
+      <p>Please contact the research team for assistance.</p>
     </section></div>`;
 } else {
   jsPsych.run(timeline);

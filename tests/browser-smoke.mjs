@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 
 const baseUrl = process.env.EXPERIMENT_URL || "http://127.0.0.1:8088/";
 const participantId = "P-ABCD-EFGH-JKLM";
-const smokeUrl = `${baseUrl}${baseUrl.includes("?") ? "&" : "?"}pid=${participantId}&wave=T2&review=1&debug=1&fast=1&smoke=1`;
+const smokeUrl = `${baseUrl}${baseUrl.includes("?") ? "&" : "?"}pid=${participantId}&wave=T2&debug=1&fast=1&smoke=1`;
 const browser = await chromium.launch({
   headless: true,
   executablePath: "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"
@@ -21,6 +21,7 @@ const waitForText = (text) => page.getByText(text, { exact: false }).first().wai
 await page.goto(smokeUrl, { waitUntil: "networkidle" });
 await waitForText(participantId);
 await waitForText("Participant information and written informed consent");
+assert.equal(await page.getByText(/ethics committee preview|recruitment and data upload are disabled/i).count(), 0);
 assert.equal(await page.getByText("What is this study about?", { exact: true }).count(), 1);
 assert.equal(await page.getByText("How will my data be used?", { exact: true }).count(), 1);
 assert.equal(await page.locator("input[type='email']").count(), 0);
@@ -121,7 +122,7 @@ assert.equal(errors.length, 0, errors.join("\n"));
 const state = await page.evaluate(() => window.EXPERIMENT_STATE);
 assert.equal(state.participant.studyId, participantId);
 assert.equal(state.participant.wave, "T2");
-assert.equal(state.reviewMode, true);
+assert.equal(state.debugMode, true);
 assert.equal("contact" in state.participant, false);
 assert.equal("email" in state.participant, false);
 assert.equal(state.questionnaireRows.length, 35);
@@ -152,6 +153,13 @@ assert.match(await researcherPage.locator("#roster-body tr strong").first().inne
 const orderLabels = await researcherPage.locator("#roster-body tr td:nth-child(3)").allTextContents();
 assert.equal(orderLabels.filter((value) => value === "BART first").length, 3);
 assert.equal(orderLabels.filter((value) => value === "Lexical first").length, 3);
+const firstManagerLink = new URL(await researcherPage.locator("#roster-body tr td:nth-child(5)").first().getAttribute("title"));
+assert.equal(firstManagerLink.origin, new URL(baseUrl).origin);
+assert.equal(firstManagerLink.pathname, new URL(baseUrl).pathname);
+assert.match(firstManagerLink.searchParams.get("pid"), /^P-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/);
+assert.equal(firstManagerLink.searchParams.get("wave"), "T1");
+assert.equal(firstManagerLink.searchParams.has("debug"), false);
+assert.equal(firstManagerLink.searchParams.has("review"), false);
 assert.equal(await researcherPage.evaluate(() => Object.keys(localStorage).some((key) => key.includes("roster"))), false);
 
 const mobileContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
@@ -167,10 +175,11 @@ assert.equal(await mobilePage.evaluate(() => Object.keys(localStorage).includes(
 await mobilePage.screenshot({ path: "tests/smoke-mobile-declined.png", fullPage: true });
 await mobileContext.close();
 
-const lockedPage = await context.newPage();
-await lockedPage.goto(baseUrl, { waitUntil: "networkidle" });
-await lockedPage.getByText("Recruitment is not open", { exact: true }).waitFor({ state: "visible" });
-assert.equal(await lockedPage.locator("input[name='consent_decision']").count(), 0);
-await lockedPage.close();
+const productionPage = await context.newPage();
+await productionPage.goto(baseUrl, { waitUntil: "networkidle" });
+await productionPage.getByText("Participant information and written informed consent", { exact: false }).waitFor({ state: "visible" });
+assert.equal(await productionPage.getByText(/ethics review|recruitment is not open/i).count(), 0);
+assert.equal(await productionPage.locator("input[name='consent_decision']").count(), 2);
+await productionPage.close();
 await browser.close();
 console.log("Browser smoke test passed.");
