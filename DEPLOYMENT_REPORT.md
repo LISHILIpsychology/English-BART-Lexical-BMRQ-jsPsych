@@ -1,5 +1,15 @@
 # Deployment Report
 
+## Longitudinal/Tidy Data Update (2026-08-12)
+
+- Behavioral tasks now precede questionnaires.
+- BART and lexical decision order is balanced by stable Study ID and remains fixed across waves.
+- The participant experiment collects no name, email, WeChat, or other contact field.
+- BMRQ and background questions now use one editable scrolling form.
+- Each visit uploads five analysis-ready files: summary, BART trials, BART actions, lexical trials, and questionnaire responses.
+- A researcher-only in-memory roster manager creates T1/T2/T3 invitation links; its contact roster is never uploaded or stored in the public site.
+- Logic and complete browser smoke tests passed after this update.
+
 ## Scope
 
 This independent English static experiment contains only:

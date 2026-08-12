@@ -5,14 +5,20 @@ Independent static jsPsych experiment. It does not depend on PsychoPy, PsychoJS,
 ## Timeline
 
 ```text
-Contact and consent
-  -> 15 demographic, music-training, and multilingual-background items
-  -> BART instructions and 3 practice balloons
-  -> BART formal task: 30 balloons
-  -> English lexical decision: 80 trials
-  -> Barcelona Music Reward Questionnaire: 20 items
-  -> DataPipe upload, with local CSV fallback
+Anonymous Study ID and consent
+  -> BART and lexical decision in Study-ID-balanced order
+  -> one editable scrolling form: BMRQ first, then background information
+  -> five tidy DataPipe uploads, with local CSV fallback
 ```
+
+## Longitudinal Participant Management
+
+- No email, WeChat, name, or other contact field appears in the participant experiment.
+- Study IDs use the format `P-XXXX-XXXX-XXXX` and remain constant at T1, T2, and T3.
+- Task order is deterministically derived from Study ID, so approximately half complete BART first and half lexical decision first. The same participant keeps the same order at follow-up.
+- The researcher-only manager is at `researcher/index.html`. It keeps the contact-to-ID roster only in page memory and can export/import a local roster CSV.
+- Follow-up links use `?pid=P-XXXX-XXXX-XXXX&wave=T2` or `wave=T3`.
+- The roster CSV contains identifiable contact information and must be stored separately from OSF research data in an access-controlled location.
 
 ## Trial Windows
 
@@ -50,7 +56,8 @@ The embedded materials contain 40 words and 40 matched nonwords. English backgro
 
 - 20 items, five-point response scale.
 - Items 2 and 5 are reverse-scored.
-- CSV stores raw response, scored response, total score, and five four-item subscale sums.
+- Items appear in one scrollable form and can be reviewed or changed until final submission.
+- Questionnaire CSV stores item-level responses; summary CSV stores total and five four-item subscale sums.
 - Long questionnaire prompts are not included in the CSV.
 
 ## Data Upload
@@ -58,7 +65,10 @@ The embedded materials contain 40 words and 40 matched nonwords. English backgro
 - Endpoint: `https://pipe.jspsych.org/api/data/`
 - DataPipe experiment ID: `w8tCrTo7vcWM`
 - Request fields: `experimentID`, `filename`, `data`
-- Filename: `YYYYMMDD_HHmm_SSffff_anonymous-code_random6.csv`; contact details are not exposed in the filename.
+- Five files are uploaded per visit: `summary`, `bart_trials`, `bart_actions`, `lexical_trials`, and `questionnaire`.
+- Filename: `StudyID_Wave_YYYYMMDD_HHmmss_mmm_SessionSuffix__FileType.csv`.
+- Study ID is stable across visits; session suffix and timestamp make every filename unique.
+- CSVs contain no contact fields.
 - Failed uploads trigger a local CSV download; completed rows are also checkpointed in browser local storage until upload succeeds.
 
 ## Local Run

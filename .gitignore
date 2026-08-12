@@ -1,6 +1,9 @@
 tests/*.png
 tests/*.csv
+researcher/*ROSTER*.csv
+LONGITUDINAL_ROSTER*.csv
 data/*.csv
 data/*.json
+legacy-data-example-tidy/
 node_modules/
 .DS_Store

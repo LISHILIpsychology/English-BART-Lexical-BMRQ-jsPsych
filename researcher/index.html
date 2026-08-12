@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Longitudinal Study ID Manager</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="./researcher.css">
+  </head>
+  <body>
+    <main class="researcher-shell">
+      <header>
+        <p class="eyebrow">Researcher-only local tool</p>
+        <h1>Longitudinal Study ID Manager</h1>
+        <p>Generate stable anonymous IDs and T1/T2/T3 invitation links. This page never uploads or permanently stores the roster.</p>
+      </header>
+
+      <section class="researcher-toolbar">
+        <button id="new-participant" class="primary-button" type="button">New participant</button>
+        <button id="export-roster" class="secondary-button" type="button">Export roster CSV</button>
+        <label class="secondary-button import-label">Import roster CSV<input id="import-roster" type="file" accept=".csv,text/csv"></label>
+        <button id="clear-roster" class="danger-button" type="button">Clear local roster</button>
+      </section>
+
+      <section class="privacy-banner">
+        <strong>Privacy boundary:</strong> contact labels remain in this page only until it closes and in roster files you download. They are never added to participant URLs, GitHub, DataPipe, OSF, browser storage, or experiment CSVs.
+      </section>
+
+      <section class="table-wrap">
+        <table>
+          <thead><tr><th>Contact label</th><th>Study ID</th><th>Order</th><th>Wave</th><th>Invitation link</th><th>Actions</th></tr></thead>
+          <tbody id="roster-body"></tbody>
+        </table>
+        <div id="empty-state">No participants yet.</div>
+      </section>
+      <p id="manager-message" class="manager-message" aria-live="polite"></p>
+    </main>
+    <script type="module" src="./researcher.js"></script>
+  </body>
+</html>

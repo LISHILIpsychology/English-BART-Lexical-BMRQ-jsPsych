@@ -1,0 +1,114 @@
+.researcher-shell {
+  width: min(1240px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 36px 0 70px;
+}
+
+.researcher-shell header h1 {
+  margin: 4px 0 10px;
+}
+
+.eyebrow {
+  color: #8a5a00;
+  font-weight: 800;
+}
+
+.researcher-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 26px 0 16px;
+}
+
+.import-label {
+  display: inline-flex;
+  align-items: center;
+}
+
+.import-label input {
+  display: none;
+}
+
+.danger-button {
+  border: 1px solid #b3261e;
+  border-radius: 6px;
+  padding: 11px 16px;
+  color: #b3261e;
+  background: white;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.privacy-banner {
+  padding: 14px 16px;
+  border-left: 5px solid #bb7a00;
+  background: #fff7e7;
+  line-height: 1.5;
+}
+
+.table-wrap {
+  margin-top: 18px;
+  overflow-x: auto;
+  border: 1px solid #d7dde5;
+  border-radius: 8px;
+  background: white;
+}
+
+.table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-wrap th,
+.table-wrap td {
+  padding: 12px;
+  border-bottom: 1px solid #e5e9ee;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.table-wrap th {
+  background: #eef1f4;
+}
+
+.table-wrap input,
+.table-wrap select {
+  min-width: 130px;
+  border: 1px solid #aeb8c4;
+  border-radius: 5px;
+  padding: 8px;
+}
+
+.link-cell {
+  max-width: 330px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 13px;
+}
+
+.row-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.mini-button {
+  border: 1px solid #aeb8c4;
+  border-radius: 5px;
+  padding: 7px 9px;
+  background: white;
+  cursor: pointer;
+}
+
+#empty-state {
+  padding: 32px;
+  color: #5f6b7a;
+  text-align: center;
+}
+
+.manager-message {
+  min-height: 24px;
+  color: #1f595a;
+  font-weight: 700;
+}

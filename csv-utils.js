@@ -1,86 +1,54 @@
-export const DATA_COLUMNS = [
-  "session_id",
-  "started_at_iso",
-  "filename",
-  "subject_id",
-  "participant_code",
-  "participant_contact",
-  "participant_email",
-  "row_index",
-  "task",
-  "phase",
-  "block",
-  "condition",
-  "row_type",
-  "trial_index",
-  "subjID",
-  "trial",
-  "rt",
-  "rt_ms",
-  "decision_rt_ms",
-  "timestamp",
-  "action_timestamp_iso",
-  "anticipatory",
-  "timeout",
-  "response",
-  "accuracy",
-  "stimulus_id",
-  "stimulus",
-  "lexicality",
-  "correct_response",
-  "balloon_id",
-  "schedule_id",
-  "rng_seed",
-  "explosion_point",
-  "max_possible_pumps",
-  "reward_per_pump",
-  "starting_reward",
-  "n_pumps",
-  "pumps",
-  "explosion",
-  "popped",
-  "collected",
-  "action",
-  "action_index",
-  "pump_index",
-  "temporary_reward_before",
-  "temporary_reward_after",
-  "popped_after_action",
-  "temporary_reward",
-  "banked_total_before",
-  "banked_total",
-  "question_id",
-  "scale",
-  "item",
-  "value",
-  "scored_value",
-  "reverse_scored",
-  "score_name",
-  "score_value",
-  "action_log",
-  "user_agent"
-];
+const STUDY_ID_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
-export function createSessionId() {
-  const randomPart = Math.random().toString(36).slice(2, 10);
-  return `sess_${formatDateParts(new Date()).compact}_${randomPart}`;
+export function createStudyId(randomBytes) {
+  const bytes = randomBytes || secureRandomBytes(12);
+  const characters = Array.from(bytes, (byte) => STUDY_ID_ALPHABET[byte % STUDY_ID_ALPHABET.length]);
+  return `P-${characters.slice(0, 4).join("")}-${characters.slice(4, 8).join("")}-${characters.slice(8, 12).join("")}`;
 }
 
-export function createDataFilename(contact = "anonymous") {
-  const now = new Date();
-  const parts = formatDateParts(now);
-  const contactPart = sanitizeFilenamePart(contact || "anonymous").slice(0, 18) || "anonymous";
-  const randomPart = Math.random().toString(36).slice(2, 8).padEnd(6, "x");
-  const fractional = String(now.getMilliseconds()).padStart(3, "0") + String(Math.floor(Math.random() * 10));
-  return `${parts.date}_${parts.hourMinute}_${parts.seconds}${fractional}_${contactPart}_${randomPart}.csv`;
+export function normalizeStudyId(value) {
+  return String(value || "").trim().toUpperCase();
 }
 
-export function rowsToCsv(rows, columns = DATA_COLUMNS) {
-  const lines = [columns.join(",")];
+export function isValidStudyId(value) {
+  return /^P-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/.test(normalizeStudyId(value));
+}
+
+export function normalizeWave(value) {
+  const wave = String(value || "T1").trim().toUpperCase();
+  return ["T1", "T2", "T3"].includes(wave) ? wave : "T1";
+}
+
+export function deriveTaskOrder(studyId) {
+  return hashText(normalizeStudyId(studyId)) % 2 === 0 ? "BART_LEXICAL" : "LEXICAL_BART";
+}
+
+export function createSessionId(date = new Date(), randomBytes) {
+  const randomPart = Array.from(randomBytes || secureRandomBytes(8), (byte) =>
+    STUDY_ID_ALPHABET[byte % STUDY_ID_ALPHABET.length]
+  ).join("");
+  return `S-${formatDateParts(date).compact}-${randomPart}`;
+}
+
+export function createFileBase(studyId, wave, sessionId, date = new Date()) {
+  const parts = formatDateParts(date);
+  const milliseconds = String(date.getMilliseconds()).padStart(3, "0");
+  const sessionSuffix = sanitizeFilenamePart(sessionId).slice(-8) || "SESSION";
+  return `${normalizeStudyId(studyId)}_${normalizeWave(wave)}_${parts.date}_${parts.hourMinute}${parts.seconds}_${milliseconds}_${sessionSuffix}`;
+}
+
+export function createDataFilename(fileBase, fileType) {
+  const type = sanitizeFilenamePart(fileType).toLowerCase() || "data";
+  return `${sanitizeFilenamePart(fileBase)}__${type}.csv`;
+}
+
+export function rowsToCsv(rows, columns) {
+  const selectedColumns = columns || collectColumns(rows);
+  const lines = [selectedColumns.map(csvCell).join(",")];
   for (const row of rows) {
-    lines.push(columns.map((column) => csvCell(row[column])).join(","));
+    lines.push(selectedColumns.map((column) => csvCell(row[column])).join(","));
   }
-  return lines.join("\n");
+  return `\uFEFF${lines.join("\n")}`;
 }
 
 export function downloadCsv(filename, csvText) {
@@ -114,18 +82,44 @@ export async function uploadToDataPipe({ experimentID, filename, data }) {
 }
 
 export function sanitizeFilenamePart(value) {
-  return String(value)
+  return String(value || "")
     .trim()
     .replace(/[^a-zA-Z0-9_-]+/g, "_")
     .replace(/^_+|_+$/g, "");
 }
 
+function secureRandomBytes(length) {
+  const bytes = new Uint8Array(length);
+  if (globalThis.crypto?.getRandomValues) return globalThis.crypto.getRandomValues(bytes);
+  for (let index = 0; index < length; index += 1) bytes[index] = Math.floor(Math.random() * 256);
+  return bytes;
+}
+
+function hashText(text) {
+  let hash = 2166136261;
+  for (let index = 0; index < text.length; index += 1) {
+    hash ^= text.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+function collectColumns(rows) {
+  const columns = [];
+  const seen = new Set();
+  rows.forEach((row) => Object.keys(row).forEach((column) => {
+    if (!seen.has(column)) {
+      seen.add(column);
+      columns.push(column);
+    }
+  }));
+  return columns;
+}
+
 function csvCell(value) {
   if (value === undefined || value === null) return "";
   const text = String(value);
-  if (/[",\n\r]/.test(text)) {
-    return `"${text.replace(/"/g, '""')}"`;
-  }
+  if (/[",\n\r]/.test(text)) return `"${text.replace(/"/g, '""')}"`;
   return text;
 }
 

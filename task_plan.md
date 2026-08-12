@@ -1,25 +1,28 @@
-# Task Plan: Publish the English BART, lexical decision, and BMRQ experiment
+# Task Plan: Longitudinal data and form redesign
 
 ## Goal
-Audit, test, and publish the independent English experiment and verify its public URL and data pipeline without changing any original PsychoPy project or old GitHub repository.
+Make the public experiment longitudinal-ready, move behavioral tasks before forms, replace one-item screens with an editable scrolling form, and export analysis-ready files without changing source projects.
 
 ## Phases
-- [x] Phase 1: Confirm the isolated working copy and deployment target
-- [x] Phase 2: Audit experiment logic, data schema, and upload behavior
-- [x] Phase 3: Fix issues and run automated/local browser checks
-- [x] Phase 4: Commit, push, enable GitHub Pages, and verify production
-- [x] Phase 5: Produce deployment report and collection-readiness status
+- [x] Phase 1: Audit the participant's real CSV and identify the wide-table problem
+- [x] Phase 2: Specify anonymous longitudinal IDs and stable task counterbalancing
+- [x] Phase 3: Implement scrolling forms, tidy exports, and researcher tools
+- [x] Phase 4: Run logic, browser, data, and code-review checks
+- [ ] Phase 5: Publish and verify the production URL
 
 ## Key Questions
-1. Does the BART implementation count only pump actions and produce model-ready trial/action data?
-2. Do fishing, lexical-decision, and questionnaire flows record complete, unambiguous data?
-3. Does the unique filename scheme and DataPipe fallback work in production?
-4. Is the new GitHub Pages URL reachable and independent of prior repositories?
+1. Can T1/T2/T3 be matched without storing contact details in research data?
+2. Can each output file contain only columns relevant to one analysis table?
+3. Can participants review and change all questionnaire responses before submission?
+4. Does between-participant counterbalancing stay stable across waves?
 
 ## Decisions Made
 - Source protection: all work remains in the English deployment copy.
 - Repository: `LISHILIpsychology/English-BART-Lexical-BMRQ-jsPsych`.
 - Hosting: GitHub Pages from the new repository, not the old experiment URL.
+- Order: BART and lexical decision are counterbalanced by Study ID; BMRQ and demographics follow both tasks.
+- Identity: only an anonymous Study ID enters OSF; contact-to-ID mapping remains in a researcher-only local roster.
+- Export: summary, BART trials, BART actions, lexical trials, and questionnaire CSVs are separate.
 
 ## Errors Encountered
 - GitHub CLI is not installed. Use existing Git credentials and the GitHub connector where needed.
@@ -27,4 +30,4 @@ Audit, test, and publish the independent English experiment and verify its publi
 - Direct PowerShell deletion of obsolete copied assets was blocked by policy. Used a verified Git clean path after confirming the target directory.
 
 ## Status
-**Complete** - public deployment and the DataPipe collection path were verified.
+**Currently in Phase 5** - all local checks passed; publishing and verifying the production URL.
