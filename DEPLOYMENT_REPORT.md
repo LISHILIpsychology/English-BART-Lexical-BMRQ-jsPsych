@@ -1,5 +1,14 @@
 # Deployment Report
 
+## Consent and questionnaire presentation update (2026-08-12)
+
+- Replaced the brief bundled consent checkbox with written participant information and mutually exclusive agree/decline choices.
+- Declining now stops before task progression and produces no research-response upload.
+- Removed the requirement that participants confirm memorising or saving their Study ID; researcher-managed longitudinal links remain the primary matching method.
+- Rebuilt numeric five- and seven-point items as responsive rating scales. Long endpoint labels remain inside their assigned controls and switch to full-width rows on narrow screens.
+- Institution-specific ethics reference and researcher contact details still need to be inserted from the approved study documents before formal recruitment.
+- Logic tests, desktop/mobile browser flow, consent-decline behavior, and rating-label overflow checks passed.
+
 ## Longitudinal/Tidy Data Update (2026-08-12)
 
 - Behavioral tasks now precede questionnaires.

@@ -64,6 +64,8 @@ const appState = {
   exports: [],
   bartPracticeBanked: 0,
   bartFormalBanked: 0,
+  consentGiven: false,
+  consentDeclined: false,
   debugMode: DEBUG_MODE,
   uploadComplete: false
 };
@@ -117,6 +119,7 @@ function baseMetadata() {
 }
 
 function checkpoint() {
+  if (!appState.consentGiven) return;
   try {
     localStorage.setItem("english_bart_lexical_bmrq_checkpoint_v2", JSON.stringify({
       ...baseMetadata(),
@@ -203,28 +206,60 @@ function makeParticipantFormPlugin() {
 
       const isReturning = appState.participant.idSource === "invitation_link";
       displayElement.innerHTML = `
-        <div class="screen">
+        <div class="screen consent-screen">
           <section class="panel participant-panel">
-            <h1>English Decision and Music Study</h1>
-            <p>Complete this study on a laptop or desktop computer with a physical keyboard.</p>
+            <header class="consent-header">
+              <span class="consent-eyebrow">Participant information and written informed consent</span>
+              <h1>English Decision and Music Study</h1>
+              <p>Please read the information below before deciding whether to take part.</p>
+            </header>
+            <div class="consent-information">
+              <section>
+                <h2>What is this study about?</h2>
+                <p>This research examines decision-making, English word recognition, and responses to music in adults. You must be at least 18 years old to participate.</p>
+              </section>
+              <section>
+                <h2>What will I do?</h2>
+                <p>You will complete a balloon decision task, an English word/non-word task, a music reward questionnaire, and brief background questions. The study takes approximately 20 to 25 minutes and requires a laptop or desktop computer with a physical keyboard.</p>
+              </section>
+              <section>
+                <h2>Are there any risks or benefits?</h2>
+                <p>No risks beyond possible temporary boredom, fatigue, or mild frustration are expected. You may take a break before starting a new section. There is no guaranteed direct benefit from taking part.</p>
+              </section>
+              <section>
+                <h2>Is participation voluntary?</h2>
+                <p>Taking part is voluntary. You may decline now or stop before submitting your responses, without giving a reason or penalty. After anonymous data have been submitted, removal may not be possible because the research file does not contain your name or contact details.</p>
+              </section>
+              <section>
+                <h2>How will my data be used?</h2>
+                <p>The study records an anonymous Study ID, task responses, reaction times, questionnaire answers, and general background information. It does not ask for your name, email address, or WeChat. Research data will be stored in the research team's secure cloud repository and may be analysed or reported in anonymised form.</p>
+              </section>
+              <section>
+                <h2>Questions or concerns</h2>
+                <p>Please use the research-team or ethics contact details provided in your study invitation or recruitment notice.</p>
+              </section>
+            </div>
             <div class="study-id-box">
               <div>
-                <span class="study-id-label">Your anonymous Study ID</span>
+                <span class="study-id-label">Anonymous Study ID</span>
                 <strong id="study-id-value">${escapeHtml(appState.participant.studyId)}</strong>
               </div>
               <button id="copy-study-id" class="secondary-button" type="button">Copy ID</button>
             </div>
-            <p class="privacy-note">Visit: <strong>${escapeHtml(appState.participant.wave)}</strong>. Keep this ID for future visits. It contains no name, email, or contact information.</p>
+            <p class="privacy-note">Visit: <strong>${escapeHtml(appState.participant.wave)}</strong>. This code contains no contact information. Your researcher will use the same code for follow-up invitations${isReturning ? "." : "; saving a copy is optional backup."}</p>
             <form id="participant-form" class="consent-form">
-              <label class="consent-row">
-                <input name="adult_confirmation" type="checkbox" required>
-                <span>I confirm that I am at least 18 years old and agree to take part.</span>
-              </label>
-              <label class="consent-row">
-                <input name="id_confirmation" type="checkbox" required>
-                <span>${isReturning ? "I confirm that this Study ID matches my invitation." : "I have saved my Study ID for future follow-up visits."}</span>
-              </label>
-              <button class="primary-button" type="submit">Start experiment</button>
+              <fieldset class="consent-decision">
+                <legend>Your decision</legend>
+                <label class="consent-choice">
+                  <input name="consent_decision" value="agree" type="radio" required>
+                  <span><strong>I agree to participate.</strong> I confirm that I am at least 18 years old, have read the information above, and freely consent to take part.</span>
+                </label>
+                <label class="consent-choice decline-choice">
+                  <input name="consent_decision" value="decline" type="radio" required>
+                  <span><strong>I do not agree to participate.</strong></span>
+                </label>
+              </fieldset>
+              <button id="start-experiment" class="primary-button" type="submit" disabled>Agree and start experiment</button>
               <div id="participant-message" class="error-text" aria-live="polite"></div>
             </form>
           </section>
@@ -243,14 +278,34 @@ function makeParticipantFormPlugin() {
       });
 
       const form = displayElement.querySelector("#participant-form");
+      const startButton = displayElement.querySelector("#start-experiment");
+      form.querySelectorAll('input[name="consent_decision"]').forEach((control) => {
+        control.addEventListener("change", () => {
+          startButton.disabled = false;
+          startButton.textContent = control.value === "agree" ? "Agree and start experiment" : "Confirm and leave study";
+          message.textContent = "";
+        });
+      });
       form.addEventListener("submit", (event) => {
         event.preventDefault();
         if (!form.reportValidity()) {
           message.className = "error-text";
-          message.textContent = "Please confirm both statements.";
+          message.textContent = "Please select whether you agree or do not agree to participate.";
+          return;
+        }
+        const decision = new FormData(form).get("consent_decision");
+        if (decision !== "agree") {
+          appState.consentDeclined = true;
+          try { localStorage.removeItem("english_bart_lexical_bmrq_checkpoint_v2"); } catch {}
+          displayElement.innerHTML = `<div class="screen"><section class="panel compact decline-panel">
+            <h1>You have chosen not to participate</h1>
+            <p>Thank you for considering this study. The experiment has not started and no research responses have been submitted.</p>
+            <p>You may now close this browser tab.</p>
+          </section></div>`;
           return;
         }
         const rtMs = Math.round(performance.now() - start);
+        appState.consentGiven = true;
         appendDataRow({
           task: "enrollment",
           row_type: "enrollment",
@@ -267,6 +322,27 @@ function makeParticipantFormPlugin() {
 function itemFieldHtml(item, order) {
   const required = item.required ? "required" : "";
   if (item.options) {
+    const isNumericRating = item.options.length >= 5
+      && item.options.length <= 7
+      && item.options.every((option) => Number.isFinite(Number(option.value)));
+    if (isNumericRating) {
+      return `<fieldset class="form-question rating-question" data-question-id="${item.id}">
+        <legend><span>${order}.</span> ${escapeHtml(item.prompt)}</legend>
+        <div class="rating-options rating-options-${item.options.length}" role="radiogroup">
+          ${item.options.map((option) => {
+            const rawLabel = String(option.label);
+            const anchorLabel = rawLabel === String(option.value)
+              ? ""
+              : rawLabel.replace(/^\d+\s*-\s*/, "");
+            return `<label class="rating-option" aria-label="${escapeHtml(`${option.value} ${anchorLabel}`.trim())}">
+              <input type="radio" name="q_${item.id}" value="${escapeHtml(option.value)}" data-label="${escapeHtml(option.label)}" ${required}>
+              <span class="rating-number">${escapeHtml(option.value)}</span>
+              <span class="rating-label">${escapeHtml(anchorLabel)}</span>
+            </label>`;
+          }).join("")}
+        </div>
+      </fieldset>`;
+    }
     return `<fieldset class="form-question" data-question-id="${item.id}">
       <legend><span>${order}.</span> ${escapeHtml(item.prompt)}</legend>
       <div class="form-options ${item.options.length > 6 ? "compact-options" : ""}">

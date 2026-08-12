@@ -1,28 +1,27 @@
-# Task Plan: Longitudinal data and form redesign
+# Task Plan: Consent and questionnaire presentation update
 
 ## Goal
-Make the public experiment longitudinal-ready, move behavioral tasks before forms, replace one-item screens with an editable scrolling form, and export analysis-ready files without changing source projects.
+Add a readable written-consent decision at entry and redesign rating-scale questions so labels never overflow on desktop or mobile, without changing source projects.
 
 ## Phases
-- [x] Phase 1: Audit the participant's real CSV and identify the wide-table problem
-- [x] Phase 2: Specify anonymous longitudinal IDs and stable task counterbalancing
-- [x] Phase 3: Implement scrolling forms, tidy exports, and researcher tools
-- [x] Phase 4: Run logic, browser, data, and code-review checks
-- [x] Phase 5: Publish and verify the production URL
+- [x] Phase 1: Inspect current entry, consent behavior, questionnaire markup, and responsive CSS
+- [x] Phase 2: Implement written consent with explicit agree/decline behavior
+- [x] Phase 3: Implement accessible responsive rating scales
+- [x] Phase 4: Run logic, browser, visual, and code-review checks
+- [ ] Phase 5: Commit, publish, and verify the production URL
 
 ## Key Questions
-1. Can T1/T2/T3 be matched without storing contact details in research data?
-2. Can each output file contain only columns relevant to one analysis table?
-3. Can participants review and change all questionnaire responses before submission?
-4. Does between-participant counterbalancing stay stable across waves?
+1. Is consent an informed, affirmative decision rather than a bundled checkbox?
+2. Does declining prevent all task progression and data upload?
+3. Do five- and seven-point labels remain legible without overflow at all tested widths?
 
 ## Decisions Made
 - Source protection: all work remains in the English deployment copy.
 - Repository: `LISHILIpsychology/English-BART-Lexical-BMRQ-jsPsych`.
-- Hosting: GitHub Pages from the new repository, not the old experiment URL.
-- Order: BART and lexical decision are counterbalanced by Study ID; BMRQ and demographics follow both tasks.
-- Identity: only an anonymous Study ID enters OSF; contact-to-ID mapping remains in a researcher-only local roster.
-- Export: summary, BART trials, BART actions, lexical trials, and questionnaire CSVs are separate.
+- Consent: written participant information is shown before any task; agree and decline are mutually exclusive radio options.
+- Identity: Study ID remains visible and copyable as a backup, but participants are not required to memorize it.
+- Missing institution-specific ethics/contact details are not invented; the page refers participants to the invitation while documentation flags final ethics review.
+- Rating layout: numeric rating scales use a dedicated responsive component with visible radio controls and stable labels.
 
 ## Errors Encountered
 - GitHub CLI is not installed. Use existing Git credentials and the GitHub connector where needed.
@@ -30,4 +29,4 @@ Make the public experiment longitudinal-ready, move behavioral tasks before form
 - Direct PowerShell deletion of obsolete copied assets was blocked by policy. Used a verified Git clean path after confirming the target directory.
 
 ## Status
-**Complete** - the production site, longitudinal manager, tidy exports, and public browser flow were verified.
+**Currently in Phase 5** - preparing the verified copy for GitHub Pages deployment.

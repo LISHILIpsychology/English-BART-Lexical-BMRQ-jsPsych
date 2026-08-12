@@ -36,3 +36,10 @@ Sources:
 - https://pubmed.ncbi.nlm.nih.gov/24903688/
 - https://doi.org/10.1016/j.paid.2013.03.008
 - https://staff.napier.ac.uk/services/governance-compliance/governance/DataProtection/Documents/Research/Basic_Pseudonymisation_Guidance.pdf
+
+## Consent and Form Presentation Update
+- The prior entry page bundled age and agreement into one short checkbox and did not present written study information.
+- The new entry must explain purpose, procedures, approximate duration, voluntary participation, foreseeable burden, privacy/data use, withdrawal limits, and contact route before the participant decides.
+- Institution-specific investigator details and ethics approval numbers were not available in the copied project and must not be fabricated.
+- Declining consent must not call `finishTrial`, append an enrollment row, checkpoint participant metadata, or reach the upload timeline.
+- Five- and seven-point numeric response sets need dedicated rating-scale markup. Long endpoint labels should wrap inside their own track position on desktop and become full-width rows on narrow screens.

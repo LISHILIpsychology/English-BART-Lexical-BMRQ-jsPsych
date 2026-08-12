@@ -20,11 +20,14 @@ const waitForText = (text) => page.getByText(text, { exact: false }).first().wai
 
 await page.goto(smokeUrl, { waitUntil: "networkidle" });
 await waitForText(participantId);
+await waitForText("Participant information and written informed consent");
+assert.equal(await page.getByText("What is this study about?", { exact: true }).count(), 1);
+assert.equal(await page.getByText("How will my data be used?", { exact: true }).count(), 1);
 assert.equal(await page.locator("input[type='email']").count(), 0);
-assert.equal(await page.getByText("WeChat", { exact: false }).count(), 0);
-await page.locator("input[name='adult_confirmation']").check();
-await page.locator("input[name='id_confirmation']").check();
-await page.getByRole("button", { name: "Start experiment" }).click();
+assert.equal(await page.locator('input[name*="contact"], input[name*="wechat"], input[name*="email"]').count(), 0);
+assert.equal(await page.getByRole("button", { name: "Agree and start experiment" }).isDisabled(), true);
+await page.locator("input[name='consent_decision'][value='agree']").check();
+await page.getByRole("button", { name: "Agree and start experiment" }).click();
 await page.getByRole("button", { name: "Enter full screen" }).click();
 
 const firstTask = await page.locator("h1").first().innerText();
@@ -69,6 +72,20 @@ await waitForText("Questionnaires and background information");
 assert.match(await page.locator("#answered-count").innerText(), /^0 of 35 answered$/);
 assert.equal(await page.getByText("Music Reward Questionnaire", { exact: true }).count(), 1);
 assert.equal(await page.getByText("Background information", { exact: true }).count(), 1);
+const proficiencyQuestion = page.locator('[data-question-id="LANG05"]');
+assert.equal(await proficiencyQuestion.locator(".rating-option").count(), 7);
+const proficiencyOverflow = await proficiencyQuestion.locator(".rating-option").evaluateAll((elements) => elements.some((element) => (
+  element.scrollWidth > element.clientWidth + 1 || element.scrollHeight > element.clientHeight + 1
+)));
+assert.equal(proficiencyOverflow, false);
+await page.setViewportSize({ width: 390, height: 844 });
+await proficiencyQuestion.scrollIntoViewIfNeeded();
+const mobileProficiencyOverflow = await proficiencyQuestion.locator(".rating-option").evaluateAll((elements) => elements.some((element) => (
+  element.scrollWidth > element.clientWidth + 1 || element.scrollHeight > element.clientHeight + 1
+)));
+assert.equal(mobileProficiencyOverflow, false);
+await proficiencyQuestion.screenshot({ path: "tests/smoke-mobile-question-33.png" });
+await page.setViewportSize({ width: 1440, height: 900 });
 
 await page.getByRole("button", { name: "Submit all responses" }).click();
 assert.match(await page.locator("#form-error").innerText(), /answer every required question/i);
@@ -132,7 +149,14 @@ assert.equal(await researcherPage.evaluate(() => Object.keys(localStorage).some(
 const mobileContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
 const mobilePage = await mobileContext.newPage();
 await mobilePage.goto(smokeUrl, { waitUntil: "networkidle" });
-await mobilePage.screenshot({ path: "tests/smoke-mobile-longitudinal-entry.png", fullPage: true });
+await mobilePage.screenshot({ path: "tests/smoke-mobile-consent.png", fullPage: true });
+await mobilePage.locator("input[name='consent_decision'][value='decline']").check();
+await mobilePage.getByRole("button", { name: "Confirm and leave study" }).click();
+await mobilePage.getByText("You have chosen not to participate", { exact: true }).waitFor({ state: "visible" });
+assert.equal(await mobilePage.evaluate(() => window.EXPERIMENT_STATE.rows.length), 0);
+assert.equal(await mobilePage.evaluate(() => window.EXPERIMENT_STATE.consentDeclined), true);
+assert.equal(await mobilePage.evaluate(() => Object.keys(localStorage).includes("english_bart_lexical_bmrq_checkpoint_v2")), false);
+await mobilePage.screenshot({ path: "tests/smoke-mobile-declined.png", fullPage: true });
 await mobileContext.close();
 await browser.close();
 console.log("Browser smoke test passed.");

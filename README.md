@@ -5,7 +5,7 @@ Independent static jsPsych experiment. It does not depend on PsychoPy, PsychoJS,
 ## Timeline
 
 ```text
-Anonymous Study ID and consent
+Written participant information, explicit consent, and anonymous Study ID
   -> BART and lexical decision in Study-ID-balanced order
   -> one editable scrolling form: BMRQ first, then background information
   -> five tidy DataPipe uploads, with local CSV fallback
@@ -19,6 +19,14 @@ Anonymous Study ID and consent
 - The researcher-only manager is at `researcher/index.html`. It keeps the contact-to-ID roster only in page memory and can export/import a local roster CSV.
 - Follow-up links use `?pid=P-XXXX-XXXX-XXXX&wave=T2` or `wave=T3`.
 - The roster CSV contains identifiable contact information and must be stored separately from OSF research data in an access-controlled location.
+
+## Consent
+
+- The first page presents written information about the purpose, procedures, duration, foreseeable burden, voluntary participation, withdrawal, privacy, and data use.
+- Participants must actively select either `I agree to participate` or `I do not agree to participate`.
+- Declining ends the visit before any task starts and does not create or upload a research-response file.
+- The Study ID is shown as an optional participant backup. Longitudinal matching is managed through the separate researcher roster, so participants are not expected to memorise it.
+- Before recruitment, the approved investigator name, institution, ethics reference, and direct contact details should be added from the final ethics documents. They are not fabricated in this repository.
 
 ## Trial Windows
 

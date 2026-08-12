@@ -1,6 +1,6 @@
 export const EXPERIMENT_CONFIG = {
   experimentName: "English BART, Lexical Decision, and Music Reward Study",
-  version: "2026-08-12-longitudinal-tidy-v2",
+  version: "2026-08-12-consent-form-v3",
   datapipeExperimentId: "w8tCrTo7vcWM",
   bartRewardPerPump: 0.05,
   bartInitialTemporaryReward: 0.05,
