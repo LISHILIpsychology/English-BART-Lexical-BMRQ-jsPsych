@@ -8,7 +8,7 @@ Make the public experiment longitudinal-ready, move behavioral tasks before form
 - [x] Phase 2: Specify anonymous longitudinal IDs and stable task counterbalancing
 - [x] Phase 3: Implement scrolling forms, tidy exports, and researcher tools
 - [x] Phase 4: Run logic, browser, data, and code-review checks
-- [ ] Phase 5: Publish and verify the production URL
+- [x] Phase 5: Publish and verify the production URL
 
 ## Key Questions
 1. Can T1/T2/T3 be matched without storing contact details in research data?
@@ -30,4 +30,4 @@ Make the public experiment longitudinal-ready, move behavioral tasks before form
 - Direct PowerShell deletion of obsolete copied assets was blocked by policy. Used a verified Git clean path after confirming the target directory.
 
 ## Status
-**Currently in Phase 5** - all local checks passed; publishing and verifying the production URL.
+**Complete** - the production site, longitudinal manager, tidy exports, and public browser flow were verified.
