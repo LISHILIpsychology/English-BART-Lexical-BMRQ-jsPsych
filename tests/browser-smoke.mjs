@@ -1,6 +1,9 @@
 import { chromium } from "file:///C:/Users/lilis/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs";
 import assert from "node:assert/strict";
 
+const baseUrl = process.env.EXPERIMENT_URL || "http://127.0.0.1:8088/";
+const smokeUrl = `${baseUrl}${baseUrl.includes("?") ? "&" : "?"}debug=1&fast=1&smoke=1`;
+
 const browser = await chromium.launch({
   headless: true,
   executablePath: "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"
@@ -16,7 +19,7 @@ page.on("console", (message) => {
 const bodyText = () => page.locator("body").innerText();
 const waitForText = (text) => page.getByText(text, { exact: false }).first().waitFor({ state: "visible" });
 
-await page.goto("http://127.0.0.1:8088/?debug=1&fast=1&smoke=1", { waitUntil: "networkidle" });
+await page.goto(smokeUrl, { waitUntil: "networkidle" });
 await page.getByRole("button", { name: "Enter full screen" }).click();
 
 await page.locator("#contact").fill("codex-smoke");
@@ -67,7 +70,7 @@ assert.equal(state.rows.some((row) => row.task === "fishing_bandit"), false);
 await page.screenshot({ path: "tests/smoke-finished.png", fullPage: true });
 const mobileContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
 const mobilePage = await mobileContext.newPage();
-await mobilePage.goto("http://127.0.0.1:8088/?debug=1&fast=1&smoke=1", { waitUntil: "networkidle" });
+await mobilePage.goto(smokeUrl, { waitUntil: "networkidle" });
 await mobilePage.screenshot({ path: "tests/smoke-mobile.png", fullPage: true });
 await mobileContext.close();
 await browser.close();

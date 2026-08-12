@@ -17,3 +17,5 @@
 - Desktop browser full-flow smoke test passed without console/page errors.
 - Responsive screenshots inspected; no incoherent overlap.
 - CSV checked for BART pump/explosion coding, lexical RT/accuracy, and absence of fishing fields.
+- GitHub Pages production smoke run passed.
+- DataPipe test upload returned `Success`: `DEPLOYMENT_TEST_20260812_1212_099997.csv`.

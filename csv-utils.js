@@ -15,6 +15,7 @@ export const DATA_COLUMNS = [
   "trial_index",
   "subjID",
   "trial",
+  "rt",
   "rt_ms",
   "decision_rt_ms",
   "timestamp",

@@ -219,6 +219,8 @@ function makeParticipantFormPlugin() {
           task: "participant_info",
           phase: "setup",
           row_type: "form_summary",
+          timestamp: appState.startedAtIso,
+          rt: rtMs,
           rt_ms: rtMs,
           response: "submitted"
         });
@@ -248,6 +250,7 @@ function makeSurveyTrialPlugin() {
     trial(displayElement, trial) {
       const { item } = trial;
       const start = performance.now();
+      const onsetIso = new Date().toISOString();
       const optionHtml = item.options ? `
         <div class="option-list ${item.options.length > 6 ? "compact-options" : ""}">
           ${item.options.map((option) => `
@@ -303,6 +306,8 @@ function makeSurveyTrialPlugin() {
           phase: item.scale === "BMRQ" ? "music_reward" : "background",
           row_type: "survey_item",
           trial_index: trial.trial_index,
+          timestamp: onsetIso,
+          rt: rtMs,
           rt_ms: rtMs,
           response,
           question_id: item.id,
@@ -351,9 +356,9 @@ function makeBartTrialPlugin() {
       let finished = false;
 
       const render = () => {
-        const growth = Math.min(state.actualPumps, 30);
-        const width = 104 + growth * 5;
-        const height = 134 + growth * 7;
+        const growth = Math.sqrt(Math.min(state.actualPumps, state.maxPossiblePumps));
+        const width = 104 + Math.round(growth * 13);
+        const height = 134 + Math.round(growth * 18);
         displayElement.innerHTML = `
           <div class="bart-stage">
             <section class="bart-dashboard">
@@ -395,9 +400,11 @@ function makeBartTrialPlugin() {
         state.actionLog.forEach((action) => appendDataRow({
           task: "bart",
           phase: trial.phase,
+          condition: `${trial.phase}_x128`,
           row_type: "bart_action",
           trial_index: trial.trial_index,
           trial: trial.trial_index,
+          stimulus: state.balloonId,
           balloon_id: state.balloonId,
           schedule_id: state.scheduleId,
           explosion_point: state.explosionPoint,
@@ -421,11 +428,14 @@ function makeBartTrialPlugin() {
         appendDataRow({
           ...summary,
           row_type: "bart_balloon_summary",
+          condition: `${trial.phase}_x128`,
           subjID: appState.participant.code,
           trial: trial.trial_index,
+          stimulus: state.balloonId,
           reward_per_pump: state.rewardPerPump,
           starting_reward: state.startingReward,
           banked_total_before: bankedTotalBefore,
+          rt: Math.round(performance.now() - trialStart),
           rt_ms: Math.round(performance.now() - trialStart),
           timestamp: trialOnsetIso,
           response
@@ -622,6 +632,9 @@ activeLexicalTrials.forEach((trial, index) => {
     choices: ["ArrowLeft", "ArrowRight"],
     trial_duration: TIMING.lexicalResponseMs,
     data: { task: "lexical_decision", trial_index: index + 1 },
+    on_start: () => {
+      trial.onset_iso = new Date().toISOString();
+    },
     on_finish: (data) => {
       const timedOut = data.response === null;
       const correct = !timedOut && jsPsych.pluginAPI.compareKeys
@@ -633,6 +646,9 @@ activeLexicalTrials.forEach((trial, index) => {
         row_type: "lexical_trial",
         trial_index: index + 1,
         trial: index + 1,
+        condition: trial.lexicality,
+        timestamp: trial.onset_iso,
+        rt: timedOut ? "" : data.rt,
         rt_ms: timedOut ? "" : data.rt,
         response: timedOut ? "timeout" : data.response,
         accuracy: timedOut ? -1 : (correct ? 1 : 0),

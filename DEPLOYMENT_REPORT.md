@@ -31,7 +31,9 @@ Fishing and all unrelated questionnaire scales were removed. Original PsychoPy f
 - Review mode: code audit
 - Critical issues: 0
 - Major issues: 0
-- Readiness: `ready_for_collection`, subject to a real DataPipe test upload and production URL check after deployment
+- Readiness: `ready_for_collection`
+- Production GitHub Pages smoke test: passed
+- DataPipe test upload: passed (`DEPLOYMENT_TEST_20260812_1212_099997.csv`)
 
 ## Data
 

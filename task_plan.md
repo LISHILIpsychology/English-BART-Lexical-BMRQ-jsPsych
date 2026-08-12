@@ -7,8 +7,8 @@ Audit, test, and publish the independent English experiment and verify its publi
 - [x] Phase 1: Confirm the isolated working copy and deployment target
 - [x] Phase 2: Audit experiment logic, data schema, and upload behavior
 - [x] Phase 3: Fix issues and run automated/local browser checks
-- [ ] Phase 4: Commit, push, enable GitHub Pages, and verify production
-- [ ] Phase 5: Produce deployment report and collection-readiness status
+- [x] Phase 4: Commit, push, enable GitHub Pages, and verify production
+- [x] Phase 5: Produce deployment report and collection-readiness status
 
 ## Key Questions
 1. Does the BART implementation count only pump actions and produce model-ready trial/action data?
@@ -27,4 +27,4 @@ Audit, test, and publish the independent English experiment and verify its publi
 - Direct PowerShell deletion of obsolete copied assets was blocked by policy. Used a verified Git clean path after confirming the target directory.
 
 ## Status
-**Currently in Phase 4** - publishing the new repository and verifying production.
+**Complete** - public deployment and the DataPipe collection path were verified.
