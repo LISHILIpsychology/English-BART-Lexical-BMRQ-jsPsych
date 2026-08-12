@@ -130,6 +130,10 @@ assert.deepEqual(state.exports.map((file) => file.type), ["summary", "bart_trial
 assert.ok(state.exports.every((file) => file.filename.startsWith(`${participantId}_T2_`)));
 assert.ok(state.exports.every((file) => !file.csv.includes("participant_contact")));
 assert.ok(state.exports.every((file) => !file.csv.includes("participant_email")));
+const questionnaireExport = state.exports.find((file) => file.type === "questionnaire");
+assert.ok(questionnaireExport);
+assert.equal(questionnaireExport.csv.includes("response_label"), false);
+assert.equal(questionnaireExport.csv.includes("When I share music with someone"), false);
 const formalSummary = state.rows.find((row) => row.row_type === "bart_balloon" && row.phase === "formal");
 assert.equal(formalSummary.pumps, 2);
 assert.equal(formalSummary.explosion, 1);
