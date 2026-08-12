@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 
 const baseUrl = process.env.EXPERIMENT_URL || "http://127.0.0.1:8088/";
 const participantId = "P-ABCD-EFGH-JKLM";
-const smokeUrl = `${baseUrl}${baseUrl.includes("?") ? "&" : "?"}pid=${participantId}&wave=T2&debug=1&fast=1&smoke=1`;
+const smokeUrl = `${baseUrl}${baseUrl.includes("?") ? "&" : "?"}pid=${participantId}&wave=T2&review=1&debug=1&fast=1&smoke=1`;
 const browser = await chromium.launch({
   headless: true,
   executablePath: "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"
@@ -27,6 +27,9 @@ assert.equal(await page.locator("input[type='email']").count(), 0);
 assert.equal(await page.locator('input[name*="contact"], input[name*="wechat"], input[name*="email"]').count(), 0);
 assert.equal(await page.getByRole("button", { name: "Agree and start experiment" }).isDisabled(), true);
 await page.locator("input[name='consent_decision'][value='agree']").check();
+assert.equal(await page.getByRole("button", { name: "Agree and start experiment" }).isDisabled(), true);
+await page.locator("input[name='age_confirm']").check();
+await page.locator("input[name='information_confirm']").check();
 await page.getByRole("button", { name: "Agree and start experiment" }).click();
 await page.getByRole("button", { name: "Enter full screen" }).click();
 
@@ -118,6 +121,7 @@ assert.equal(errors.length, 0, errors.join("\n"));
 const state = await page.evaluate(() => window.EXPERIMENT_STATE);
 assert.equal(state.participant.studyId, participantId);
 assert.equal(state.participant.wave, "T2");
+assert.equal(state.reviewMode, true);
 assert.equal("contact" in state.participant, false);
 assert.equal("email" in state.participant, false);
 assert.equal(state.questionnaireRows.length, 35);
@@ -155,8 +159,14 @@ await mobilePage.getByRole("button", { name: "Confirm and leave study" }).click(
 await mobilePage.getByText("You have chosen not to participate", { exact: true }).waitFor({ state: "visible" });
 assert.equal(await mobilePage.evaluate(() => window.EXPERIMENT_STATE.rows.length), 0);
 assert.equal(await mobilePage.evaluate(() => window.EXPERIMENT_STATE.consentDeclined), true);
-assert.equal(await mobilePage.evaluate(() => Object.keys(localStorage).includes("english_bart_lexical_bmrq_checkpoint_v2")), false);
+assert.equal(await mobilePage.evaluate(() => Object.keys(localStorage).includes("english_bart_lexical_bmrq_checkpoint_v4")), false);
 await mobilePage.screenshot({ path: "tests/smoke-mobile-declined.png", fullPage: true });
 await mobileContext.close();
+
+const lockedPage = await context.newPage();
+await lockedPage.goto(baseUrl, { waitUntil: "networkidle" });
+await lockedPage.getByText("Recruitment is not open", { exact: true }).waitFor({ state: "visible" });
+assert.equal(await lockedPage.locator("input[name='consent_decision']").count(), 0);
+await lockedPage.close();
 await browser.close();
 console.log("Browser smoke test passed.");

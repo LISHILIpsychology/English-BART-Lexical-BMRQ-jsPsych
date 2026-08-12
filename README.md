@@ -46,7 +46,7 @@ Decision display (until key; RT begins when decision display appears)
 - `Space` is the only input that increments `n_pumps` / `pumps`.
 - `Enter` records a collect action and never increments pumps.
 - The UI never shows pump count or hidden breakpoint.
-- A new balloon displays `$0.05`; each successful pump adds `$0.05`.
+- A new balloon displays `0.05 task credits`; each successful pump adds `0.05 task credits`. These credits are task feedback and do not affect compensation.
 - The CSV includes action rows and balloon-summary rows. Summary rows expose the hBayesDM-compatible fields `subjID`, `trial`, `pumps`, and `explosion`.
 
 ### Lexical Decision
@@ -99,3 +99,5 @@ The tests cover BART off-by-one behavior, explosion coding, balanced/reproducibl
 
 - Repository: `LISHILIpsychology/English-BART-Lexical-BMRQ-jsPsych`
 - Public URL: `https://lishilipsychology.github.io/English-BART-Lexical-BMRQ-jsPsych/`
+- Recruitment is currently locked for ethics review. The public URL collects no data until the approved ethics reference, final participant materials, platform approval, and `recruitmentOpen=true` are committed.
+- Ethics reviewers can inspect the complete no-upload flow with `?review=1&debug=1`.

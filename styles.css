@@ -176,6 +176,79 @@ textarea {
   border-bottom: 1px solid var(--line);
 }
 
+.ethics-review-banner {
+  margin: 0 0 18px;
+  border: 1px solid #c68824;
+  border-radius: 6px;
+  padding: 10px 14px;
+  background: #fff7e6;
+  color: #6e4600;
+  font-weight: 800;
+}
+
+.study-id-actions,
+.finished-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.study-id-actions .secondary-button {
+  width: auto;
+  min-width: 108px;
+}
+
+.consent-confirmations {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 18px;
+}
+
+.consent-confirmations label {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 12px;
+  align-items: start;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 13px 14px;
+  background: #fbfcfd;
+  text-align: left;
+}
+
+.consent-confirmations input {
+  width: 19px;
+  height: 19px;
+  margin: 2px 0 0;
+  accent-color: var(--accent);
+}
+
+.ethics-lock-panel {
+  border-top: 6px solid #c68824;
+}
+
+.ethics-lock-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 24px;
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+  color: var(--muted);
+}
+
+@media print {
+  body * { visibility: hidden; }
+  .study-id-box,
+  .study-id-box * { visibility: visible; }
+  .study-id-box {
+    position: absolute;
+    inset: 24mm auto auto 24mm;
+    width: 160mm;
+  }
+  .study-id-actions { display: none; }
+}
+
 .consent-eyebrow {
   display: block;
   margin-bottom: 8px;
